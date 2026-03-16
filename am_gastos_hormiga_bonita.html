@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AM Gastos Hormiga</title>
+<style>
+:root{--blue:#0E2238;--blue2:#1b4d78;--gold:#C9A227;--bg:#f4f6f9;--card:#fff;--text:#1f2937;--muted:#6b7280;--line:#dde3ea;--danger:#b91c1c;--shadow:0 12px 28px rgba(14,34,56,.10);--radius:20px}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f7f9fb,#eef3f7);color:var(--text)}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 40px}.hero{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-radius:28px;padding:22px 20px;box-shadow:var(--shadow);margin-bottom:16px}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.hero h1{margin:0;font-size:1.55rem;line-height:1.15}.badge{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);font-size:.84rem;font-weight:700;white-space:nowrap}.hero p{margin:10px 0 0;opacity:.95;line-height:1.45;font-size:.96rem}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+.section-title{margin:2px 0 12px;color:var(--blue);font-size:1rem;font-weight:700}.stat-label{font-size:.82rem;color:var(--muted);margin-bottom:6px}.stat-value{font-size:1.22rem;font-weight:700;color:var(--blue)}
+label{display:block;font-size:.86rem;color:var(--blue);font-weight:700;margin-bottom:4px}input,select{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 13px;font-size:1rem;color:var(--text);background:#fff}
+input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.15)}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.actions,.toolbar{display:grid;gap:10px}.actions{grid-template-columns:1fr 1fr;margin-top:10px}.toolbar{grid-template-columns:1fr 1fr 1fr}
+button{border:0;border-radius:14px;padding:13px 14px;font-size:1rem;font-weight:700;cursor:pointer}.btn-primary{background:var(--blue);color:#fff}.btn-secondary{background:var(--gold);color:#111}.btn-light{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.hint{font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:8px}.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;font-size:.92rem}thead th{background:var(--blue);color:#fff;text-align:left;padding:12px 10px;position:sticky;top:0}tbody td,tfoot td{border-bottom:1px solid #eef2f6;padding:10px;vertical-align:top}tfoot td{font-weight:700;background:#f8f3df}
+.money{text-align:right;white-space:nowrap;font-weight:700}.empty{text-align:center;color:var(--muted);padding:22px 10px}.tag{display:inline-block;background:#f6f0d5;color:#7b6312;padding:4px 8px;border-radius:999px;font-size:.78rem;font-weight:700}.danger{background:none;color:var(--danger);padding:0;font-weight:700}
+.chart-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}canvas{width:100%;height:300px;background:#fff;border:1px solid #edf1f5;border-radius:16px}.footer-note{margin-top:14px;font-size:.82rem;color:var(--muted);text-align:center}
+@media (max-width:760px){.grid,.row3,.actions,.toolbar,.chart-grid{grid-template-columns:1fr}.hero-top{flex-direction:column;align-items:flex-start}.stat-value{font-size:1.1rem}table{font-size:.86rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<div class="hero-top"><h1>AM Gastos Hormiga</h1><div class="badge">Solo gastos diarios</div></div>
+<p>Registra tus gastos diarios para identificar gastos hormiga, ver en qué se va el dinero y exportarlo luego a Excel.</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="stat-label">Total gastado</div><div class="stat-value" id="totalGastado">$ 0</div></div>
+<div class="card"><div class="stat-label">Registros filtrados</div><div class="stat-value" id="cantidadRegistros">0</div></div>
+<div class="card"><div class="stat-label">Promedio por gasto</div><div class="stat-value" id="promedioGasto">$ 0</div></div>
+<div class="card"><div class="stat-label">Categoría más usada</div><div class="stat-value" id="topCategoria">—</div></div>
+</div>
+
+<div class="card" style="margin-bottom:14px;">
+<div class="section-title">Registrar gasto diario</div>
+<form id="expenseForm">
+<div class="row3">
+<div><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+<div><label for="categoria">Categoría</label>
+<select id="categoria" required>
+<option value="">Selecciona</option>
+<option>GASTOS FIJOS</option><option>OCASIONAL</option><option>CLUB</option><option>PRESTAMO</option><option>TC</option><option>TRANSPORTE</option><option>MERCADO</option><option>SALIDAS</option><option>SUSCRIPCIONES</option><option>COMIDA</option><option>OTRO</option>
+</select></div>
+<div><label for="valor">Valor</label><input type="number" id="valor" min="0" step="0.01" placeholder="Ej. 18000" required></div>
+</div>
+<div><label for="concepto">Concepto</label><input type="text" id="concepto" placeholder="Ej. café, gasolina, mercado, domicilio..." required></div>
+<div class="actions"><button type="submit" class="btn-primary">Guardar gasto</button><button type="button" class="btn-secondary" id="limpiarForm">Limpiar</button></div>
+</form>
+<div class="hint">Entre más juiciosa seas registrando, más fácil será detectar los gastos hormiga y los patrones que te quitan flujo.</div>
+</div>
+
+<div class="card" style="margin-bottom:14px;">
+<div class="section-title">Filtros y exportación</div>
+<div class="row3" style="margin-bottom:10px;">
+<div><label for="mesFiltro">Mes</label>
+<select id="mesFiltro">
+<option value="">Todos</option><option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option><option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option><option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option><option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+</select></div>
+<div><label for="categoriaFiltro">Categoría</label>
+<select id="categoriaFiltro">
+<option value="">Todas</option><option>GASTOS FIJOS</option><option>OCASIONAL</option><option>CLUB</option><option>PRESTAMO</option><option>TC</option><option>TRANSPORTE</option><option>MERCADO</option><option>SALIDAS</option><option>SUSCRIPCIONES</option><option>COMIDA</option><option>OTRO</option>
+</select></div>
+<div><label for="textoFiltro">Buscar concepto</label><input type="text" id="textoFiltro" placeholder="Ej. café, gasolina, mercado"></div>
+</div>
+<div class="toolbar"><button class="btn-light" type="button" id="exportCsv">Exportar CSV estilo Excel</button><button class="btn-light" type="button" id="quitarFiltros">Quitar filtros</button><button class="btn-light" type="button" id="borrarTodo">Borrar todo</button></div>
+<div class="hint">La exportación sale con columnas: Fecha, Categoría, Concepto y Valor, y una fila TOTAL al final.</div>
+</div>
+
+<div class="chart-grid" style="margin-bottom:14px;">
+<div class="card"><div class="section-title">Gráfico mensual de gastos</div><canvas id="chartMensual" width="560" height="300"></canvas><div class="hint">Te ayuda a ver en qué mes estás gastando más.</div></div>
+<div class="card"><div class="section-title">Gráfico por categoría</div><canvas id="chartCategoria" width="360" height="300"></canvas><div class="hint">Ideal para detectar rápidamente los gastos hormiga.</div></div>
+</div>
+
+<div class="card">
+<div class="section-title">Tabla de gastos estilo Excel</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Fecha</th><th>Categoría</th><th>Concepto</th><th>Valor</th><th></th></tr></thead>
+<tbody id="tablaBody"><tr><td colspan="5" class="empty">Aún no hay gastos registrados.</td></tr></tbody>
+<tfoot id="tablaFoot"></tfoot>
+</table>
+</div>
+</div>
+
+<div class="footer-note">Puedes abrir este archivo desde tu celular y usarlo como tu registro bonito de gastos diarios.</div>
+</div>
+
+<script>
+const STORAGE_KEY="am_gastos_hormiga_v1";
+const form=document.getElementById("expenseForm");
+const fecha=document.getElementById("fecha");
+const categoria=document.getElementById("categoria");
+const concepto=document.getElementById("concepto");
+const valor=document.getElementById("valor");
+const mesFiltro=document.getElementById("mesFiltro");
+const categoriaFiltro=document.getElementById("categoriaFiltro");
+const textoFiltro=document.getElementById("textoFiltro");
+const tablaBody=document.getElementById("tablaBody");
+const tablaFoot=document.getElementById("tablaFoot");
+const totalGastado=document.getElementById("totalGastado");
+const cantidadRegistros=document.getElementById("cantidadRegistros");
+const promedioGasto=document.getElementById("promedioGasto");
+const topCategoria=document.getElementById("topCategoria");
+const ctxMensual=document.getElementById("chartMensual").getContext("2d");
+const ctxCategoria=document.getElementById("chartCategoria").getContext("2d");
+const COP=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});
+function hoyISO(){const d=new Date();const off=d.getTimezoneOffset();const local=new Date(d.getTime()-off*60000);return local.toISOString().slice(0,10)}
+function getData(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}catch{return[]}}
+function setData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}
+function normalDate(iso){if(!iso)return"";const p=iso.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function applyFilters(data){const q=textoFiltro.value.trim().toLowerCase();return data.filter(item=>{const okMes=!mesFiltro.value||item.fecha.slice(5,7)===mesFiltro.value;const okCat=!categoriaFiltro.value||item.categoria===categoriaFiltro.value;const okTexto=!q||item.concepto.toLowerCase().includes(q);return okMes&&okCat&&okTexto})}
+function calcTopCategoria(filtered){if(!filtered.length)return"—";const acc={};filtered.forEach(x=>acc[x.categoria]=(acc[x.categoria]||0)+Number(x.valor||0));const top=Object.entries(acc).sort((a,b)=>b[1]-a[1])[0];return top?top[0]:"—"}
+function renderTable(){const data=getData().sort((a,b)=>a.fecha.localeCompare(b.fecha)||b.id-a.id);const filtered=applyFilters(data);const total=filtered.reduce((a,b)=>a+Number(b.valor||0),0);totalGastado.textContent=COP.format(total);cantidadRegistros.textContent=filtered.length;promedioGasto.textContent=filtered.length?COP.format(total/filtered.length):COP.format(0);topCategoria.textContent=calcTopCategoria(filtered);
+if(!filtered.length){tablaBody.innerHTML='<tr><td colspan="5" class="empty">No hay gastos para este filtro.</td></tr>';tablaFoot.innerHTML="";return;}
+tablaBody.innerHTML=filtered.map(item=>'<tr><td>'+normalDate(item.fecha)+'</td><td><span class="tag">'+item.categoria+'</span></td><td>'+item.concepto+'</td><td class="money">'+COP.format(Number(item.valor||0))+'</td><td><button class="danger" onclick="removeItem('+item.id+')">Eliminar</button></td></tr>').join('');
+tablaFoot.innerHTML='<tr><td colspan="3">TOTAL</td><td class="money">'+COP.format(total)+'</td><td></td></tr>'}
+function drawMensual(){const data=getData();const months=["01","02","03","04","05","06","07","08","09","10","11","12"];const labels=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];const totals=months.map(m=>data.filter(x=>x.fecha.slice(5,7)===m).reduce((a,b)=>a+Number(b.valor||0),0));const w=ctxMensual.canvas.width,h=ctxMensual.canvas.height;ctxMensual.clearRect(0,0,w,h);ctxMensual.fillStyle="#fff";ctxMensual.fillRect(0,0,w,h);const left=42,right=16,top=18,bottom=38,chartW=w-left-right,chartH=h-top-bottom;const max=Math.max(...totals,1);const step=max/4;ctxMensual.strokeStyle="#dde3ea";ctxMensual.lineWidth=1;ctxMensual.font="12px Arial";ctxMensual.fillStyle="#6b7280";
+for(let i=0;i<=4;i++){const y=top+chartH-chartH*(i/4);ctxMensual.beginPath();ctxMensual.moveTo(left,y);ctxMensual.lineTo(w-right,y);ctxMensual.stroke();const val=Math.round(step*i);ctxMensual.fillText(val>=1000?Math.round(val/1000)+"k":String(val),4,y+4)}
+const gap=10;const barW=(chartW-gap*11)/12;totals.forEach((v,i)=>{const x=left+i*(barW+gap);const barH=(v/max)*chartH;const y=top+chartH-barH;ctxMensual.fillStyle="#0E2238";ctxMensual.fillRect(x,y,barW,barH);ctxMensual.fillStyle="#C9A227";ctxMensual.fillRect(x,y+Math.max(barH-6,0),barW,Math.min(6,barH));ctxMensual.fillStyle="#0E2238";ctxMensual.fillText(labels[i],x+2,h-14)})}
+function drawCategoria(){const filtered=applyFilters(getData());const groups={};filtered.forEach(x=>groups[x.categoria]=(groups[x.categoria]||0)+Number(x.valor||0));const entries=Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,6);const w=ctxCategoria.canvas.width,h=ctxCategoria.canvas.height;ctxCategoria.clearRect(0,0,w,h);ctxCategoria.fillStyle="#fff";ctxCategoria.fillRect(0,0,w,h);if(!entries.length){ctxCategoria.fillStyle="#6b7280";ctxCategoria.font="14px Arial";ctxCategoria.fillText("Sin datos para mostrar",95,150);return;}
+const left=20,right=18,top=18,chartW=w-left-right,rowH=38;const max=Math.max(...entries.map(x=>x[1]),1);entries.forEach((entry,i)=>{const label=entry[0],val=entry[1],y=top+i*rowH;ctxCategoria.fillStyle="#6b7280";ctxCategoria.font="12px Arial";ctxCategoria.fillText(label,left,y+12);ctxCategoria.fillStyle="#eef2f6";ctxCategoria.fillRect(left,y+18,chartW,14);ctxCategoria.fillStyle=i%2===0?"#C9A227":"#0E2238";ctxCategoria.fillRect(left,y+18,(val/max)*chartW,14);ctxCategoria.fillStyle="#1f2937";ctxCategoria.fillText(COP.format(val),left,y+46>h-5?h-5:y+46)})}
+function renderAll(){renderTable();drawMensual();drawCategoria()}
+function resetForm(){fecha.value=hoyISO();categoria.value="";concepto.value="";valor.value="";concepto.focus()}
+function exportCSV(){const data=applyFilters(getData().sort((a,b)=>a.fecha.localeCompare(b.fecha)));if(!data.length){alert("No hay datos para exportar.");return;}const rows=[["Fecha","Categoría","Concepto","Valor"]];data.forEach(item=>rows.push([normalDate(item.fecha),item.categoria,item.concepto,item.valor]));rows.push(["","","TOTAL",data.reduce((a,b)=>a+Number(b.valor||0),0)]);const csv=rows.map(r=>r.map(v=>{const s=String(v??"");return /[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(";")).join("\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="am_gastos_hormiga.csv";a.click();URL.revokeObjectURL(url)}
+window.removeItem=function(id){if(!confirm("¿Quieres eliminar este gasto?"))return;setData(getData().filter(item=>item.id!==id));renderAll()}
+form.addEventListener("submit",function(e){e.preventDefault();const item={id:Date.now(),fecha:fecha.value,categoria:categoria.value,concepto:concepto.value.trim(),valor:Number(valor.value||0)};if(!item.fecha||!item.categoria||!item.concepto||!item.valor){alert("Completa fecha, categoría, concepto y valor.");return;}const data=getData();data.push(item);setData(data);renderAll();resetForm()});
+document.getElementById("limpiarForm").addEventListener("click",resetForm);
+document.getElementById("exportCsv").addEventListener("click",exportCSV);
+document.getElementById("quitarFiltros").addEventListener("click",function(){mesFiltro.value="";categoriaFiltro.value="";textoFiltro.value="";renderAll()});
+document.getElementById("borrarTodo").addEventListener("click",function(){if(!confirm("Esto borrará todos los registros guardados en esta app. ¿Continuar?"))return;localStorage.removeItem(STORAGE_KEY);renderAll()});
+mesFiltro.addEventListener("change",renderAll);categoriaFiltro.addEventListener("change",renderAll);textoFiltro.addEventListener("input",renderAll);
+fecha.value=hoyISO();renderAll();
+</script>
+</body>
+</html>
