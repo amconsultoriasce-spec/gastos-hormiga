@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dulce del Día</title>
+<style>
+:root{
+  --blue:#0E2238;
+  --blue2:#1b4d78;
+  --gold:#C9A227;
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --ok:#166534;
+  --soft:#f8f3df;
+  --shadow:0 14px 34px rgba(14,34,56,.12);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--text);
+  background:linear-gradient(180deg,#f7f9fc,#eef3f8);
+}
+.wrap{max-width:920px;margin:0 auto;padding:16px 14px 40px}
+.hero{
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  color:#fff;border-radius:28px;padding:22px 20px;box-shadow:var(--shadow);margin-bottom:16px
+}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hero h1{margin:0;font-size:1.7rem;line-height:1.1}
+.badge{
+  padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);font-size:.84rem;font-weight:700;white-space:nowrap
+}
+.hero p{margin:10px 0 0;opacity:.95;line-height:1.45}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px
+}
+.section-title{margin:0 0 12px;color:var(--blue);font-size:1rem;font-weight:700}
+.stat-label{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.stat-value{font-size:1.2rem;font-weight:700;color:var(--blue)}
+.big-center{text-align:center}
+.big-emoji{font-size:3.4rem;line-height:1}
+.big-number{font-size:2rem;font-weight:700;color:var(--blue)}
+.progress{
+  width:100%;height:16px;background:#edf1f6;border-radius:999px;overflow:hidden;border:1px solid #e5e7eb
+}
+.bar{
+  height:100%;width:0;background:linear-gradient(90deg,var(--gold),#e0bd54);transition:width .3s ease
+}
+label{display:block;font-size:.88rem;color:var(--blue);font-weight:700;margin-bottom:6px}
+input{
+  width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 13px;font-size:1rem;background:#fff
+}
+input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.15)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+button{
+  border:0;border-radius:14px;padding:13px 14px;font-size:1rem;font-weight:700;cursor:pointer
+}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-secondary{background:var(--gold);color:#111}
+.btn-light{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.note{font-size:.84rem;color:var(--muted);line-height:1.45;margin-top:10px}
+.message{
+  padding:14px;border-radius:18px;background:var(--soft);border:1px solid #eadca8;color:#6c5611;font-weight:700
+}
+.trophy-box{
+  text-align:center;padding:20px;border-radius:24px;background:linear-gradient(180deg,#fff8df,#f7edbf);
+  border:1px solid #e5d28b
+}
+.trophy-emoji{font-size:4rem;line-height:1}
+.trophy-title{font-size:1.4rem;font-weight:700;color:#7c6210;margin:10px 0 6px}
+.trophy-sub{color:#7c6210}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+thead th{background:var(--blue);color:#fff;text-align:left;padding:11px 10px}
+tbody td{padding:10px;border-bottom:1px solid #edf1f5}
+.tag{
+  display:inline-block;padding:4px 9px;border-radius:999px;background:#eef4fa;color:var(--blue);font-size:.78rem;font-weight:700
+}
+.ok{color:var(--ok);font-weight:700}
+.no{color:#b91c1c;font-weight:700}
+.footer{margin-top:14px;font-size:.82rem;color:var(--muted);text-align:center}
+.hidden{display:none}
+@media (max-width:760px){
+  .grid,.row2,.actions{grid-template-columns:1fr}
+  .hero-top{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-top">
+      <h1>Dulce del Día</h1>
+      <div class="badge">Viernes de Victoria 🏆</div>
+    </div>
+    <p>Lleva el seguimiento de tu dulce diario y celebra cada viernes con tu trofeo de victoria cuando cumplas tu meta semanal.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="stat-label">Días marcados este mes</div>
+      <div class="stat-value" id="monthlyCount">0</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Racha actual</div>
+      <div class="stat-value" id="streakCount">0 días</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Trofeos ganados</div>
+      <div class="stat-value" id="trophyCount">0</div>
+    </div>
+    <div class="card big-center">
+      <div class="stat-label">Hoy</div>
+      <div class="big-emoji" id="todayEmoji">🍬</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="section-title">Registrar tu dulce</div>
+    <div class="row2">
+      <div>
+        <label for="dateInput">Fecha</label>
+        <input type="date" id="dateInput" />
+      </div>
+      <div>
+        <label for="detailInput">Detalle</label>
+        <input type="text" id="detailInput" placeholder="Ej. chocolate, galleta, helado..." />
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-primary" id="markBtn">Marcar mi dulce</button>
+      <button class="btn-secondary" id="todayBtn">Registrar hoy</button>
+      <button class="btn-light" id="backupBtn">Backup JSON</button>
+    </div>
+    <div class="actions">
+      <button class="btn-light" id="restoreBtn">Restaurar backup</button>
+      <button class="btn-light" id="deleteDayBtn">Quitar este día</button>
+      <button class="btn-light" id="clearBtn">Borrar todo</button>
+    </div>
+    <input type="file" id="restoreFile" accept=".json" class="hidden" />
+    <div class="note">Tu meta es simple: marcar al menos un dulce por día. El viernes la app revisa tu semana y, si cumpliste, te entrega tu trofeo.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="section-title">Avance de la semana</div>
+    <div class="progress"><div class="bar" id="weekBar"></div></div>
+    <div style="margin-top:10px" class="message" id="weekMessage">Esta semana llevas 0 de 7 días.</div>
+  </div>
+
+  <div class="card" id="trophyPanel" style="margin-bottom:14px; display:none;">
+    <div class="section-title">Tu premio de la semana</div>
+    <div class="trophy-box">
+      <div class="trophy-emoji">🏆</div>
+      <div class="trophy-title">¡Viernes de Victoria!</div>
+      <div class="trophy-sub" id="trophyText">Cumpliste tu meta semanal.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Historial</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Fecha</th><th>Detalle</th><th>Estado</th></tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="3" style="text-align:center;color:#6b7280;padding:22px 10px;">Aún no has registrado ningún dulce.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">Tus datos quedan guardados en este dispositivo.</div>
+</div>
+
+<script>
+const STORAGE_KEY = "dulce_del_dia_v1";
+
+const dateInput = document.getElementById("dateInput");
+const detailInput = document.getElementById("detailInput");
+const historyBody = document.getElementById("historyBody");
+const monthlyCount = document.getElementById("monthlyCount");
+const streakCount = document.getElementById("streakCount");
+const trophyCount = document.getElementById("trophyCount");
+const todayEmoji = document.getElementById("todayEmoji");
+const weekBar = document.getElementById("weekBar");
+const weekMessage = document.getElementById("weekMessage");
+const trophyPanel = document.getElementById("trophyPanel");
+const trophyText = document.getElementById("trophyText");
+const restoreFile = document.getElementById("restoreFile");
+
+function todayISO(){
+  const d = new Date();
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
+}
+function getData(){
+  try{
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return data || { entries: [], trophies: [] };
+  }catch(e){
+    return { entries: [], trophies: [] };
+  }
+}
+function setData(data){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function fmtDate(iso){
+  if(!iso) return "";
+  const p = iso.split("-");
+  return p[2]+"/"+p[1]+"/"+p[0];
+}
+function monthOf(iso){ return iso.slice(0,7); }
+
+function mondayOf(date){
+  const d = new Date(date + "T12:00:00");
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+function sundayOf(date){
+  const m = new Date(mondayOf(date) + "T12:00:00");
+  m.setDate(m.getDate() + 6);
+  return m.toISOString().slice(0,10);
+}
+function datesBetween(startIso, endIso){
+  const list = [];
+  const d = new Date(startIso + "T12:00:00");
+  const end = new Date(endIso + "T12:00:00");
+  while(d <= end){
+    list.push(d.toISOString().slice(0,10));
+    d.setDate(d.getDate()+1);
+  }
+  return list;
+}
+function weekStats(entries, baseDate){
+  const start = mondayOf(baseDate);
+  const end = sundayOf(baseDate);
+  const days = datesBetween(start, end);
+  const set = new Set(entries.map(x => x.date));
+  const done = days.filter(x => set.has(x)).length;
+  return { start, end, done, total:7 };
+}
+function computeStreak(entries){
+  if(!entries.length) return 0;
+  const sorted = [...new Set(entries.map(x => x.date))].sort();
+  let streak = 1;
+  let maxCurrent = 1;
+  for(let i=1;i<sorted.length;i++){
+    const prev = new Date(sorted[i-1] + "T12:00:00");
+    const curr = new Date(sorted[i] + "T12:00:00");
+    const diff = Math.round((curr - prev) / 86400000);
+    if(diff === 1){
+      streak += 1;
+    } else {
+      streak = 1;
+    }
+    maxCurrent = streak;
+  }
+  // current streak ending today or yesterday
+  let current = 0;
+  const set = new Set(sorted);
+  let cursor = new Date(todayISO() + "T12:00:00");
+  while(true){
+    const iso = cursor.toISOString().slice(0,10);
+    if(set.has(iso)){
+      current++;
+      cursor.setDate(cursor.getDate()-1);
+    } else {
+      break;
+    }
+  }
+  return current;
+}
+function maybeAwardTrophy(data){
+  const today = todayISO();
+  const dayName = new Date(today + "T12:00:00").getDay(); // 5=Friday
+  const week = weekStats(data.entries, today);
+  const key = week.start;
+  const already = data.trophies.some(t => t.weekStart === key);
+  const qualified = week.done >= 5; // minimum 5 days to win
+  if(dayName === 5 && qualified && !already){
+    data.trophies.push({
+      id: Date.now(),
+      weekStart: key,
+      awardedOn: today,
+      daysCompleted: week.done
+    });
+    setData(data);
+  }
+}
+function render(){
+  const data = getData();
+  maybeAwardTrophy(data);
+  const fresh = getData();
+  const entries = [...fresh.entries].sort((a,b)=>b.date.localeCompare(a.date));
+  const trophies = fresh.trophies || [];
+  const thisMonth = todayISO().slice(0,7);
+  const monthCount = entries.filter(x => monthOf(x.date) === thisMonth).length;
+  const streak = computeStreak(entries);
+
+  monthlyCount.textContent = monthCount;
+  streakCount.textContent = streak + (streak === 1 ? " día" : " días");
+  trophyCount.textContent = trophies.length;
+
+  const todayDone = entries.some(x => x.date === todayISO());
+  todayEmoji.textContent = todayDone ? "✅" : "🍬";
+
+  const week = weekStats(entries, todayISO());
+  const pct = Math.round((week.done / week.total) * 100);
+  weekBar.style.width = pct + "%";
+  weekMessage.textContent = `Esta semana llevas ${week.done} de ${week.total} días. Meta para trofeo: mínimo 5 días.`;
+
+  const currentFridayWeekStart = mondayOf(todayISO());
+  const hasCurrentTrophy = trophies.some(t => t.weekStart === currentFridayWeekStart);
+  const isFriday = new Date(todayISO() + "T12:00:00").getDay() === 5;
+
+  if(isFriday && hasCurrentTrophy){
+    trophyPanel.style.display = "block";
+    trophyText.textContent = "Cumpliste la meta de la semana y ganaste tu Trofeo de Victoria.";
+  } else if (isFriday && week.done < 5){
+    trophyPanel.style.display = "block";
+    trophyText.textContent = "Hoy es viernes. Aún no alcanzaste el trofeo de esta semana, pero sigues avanzando.";
+  } else {
+    trophyPanel.style.display = "none";
+  }
+
+  if(!entries.length){
+    historyBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#6b7280;padding:22px 10px;">Aún no has registrado ningún dulce.</td></tr>';
+  } else {
+    historyBody.innerHTML = entries.map(x => `
+      <tr>
+        <td>${fmtDate(x.date)}</td>
+        <td>${(x.detail || "Dulce del día").replace(/</g,"&lt;")}</td>
+        <td><span class="tag ok">Cumplido</span></td>
+      </tr>
+    `).join("");
+  }
+}
+
+function addEntry(useToday=false){
+  const data = getData();
+  const date = useToday ? todayISO() : dateInput.value;
+  const detail = (detailInput.value || "").trim() || "Dulce del día";
+  if(!date){
+    alert("Elige una fecha.");
+    return;
+  }
+  if(data.entries.some(x => x.date === date)){
+    alert("Ese día ya está marcado.");
+    return;
+  }
+  data.entries.push({ id: Date.now(), date, detail });
+  setData(data);
+  dateInput.value = todayISO();
+  detailInput.value = "";
+  render();
+}
+function deleteSelectedDay(){
+  const date = dateInput.value;
+  if(!date){
+    alert("Elige una fecha para quitarla.");
+    return;
+  }
+  const data = getData();
+  const before = data.entries.length;
+  data.entries = data.entries.filter(x => x.date !== date);
+  if(before === data.entries.length){
+    alert("Ese día no estaba registrado.");
+    return;
+  }
+  setData(data);
+  render();
+}
+function clearAll(){
+  if(!confirm("¿Quieres borrar todo el historial y todos los trofeos?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+function backupJSON(){
+  const data = getData();
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "dulce-del-dia-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function restoreJSON(file){
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data.entries || !Array.isArray(data.entries)) throw new Error();
+      setData({ entries: data.entries, trophies: Array.isArray(data.trophies) ? data.trophies : [] });
+      render();
+      alert("Backup restaurado correctamente.");
+    }catch(e){
+      alert("Ese archivo no es válido.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById("markBtn").addEventListener("click", ()=>addEntry(false));
+document.getElementById("todayBtn").addEventListener("click", ()=>addEntry(true));
+document.getElementById("deleteDayBtn").addEventListener("click", deleteSelectedDay);
+document.getElementById("clearBtn").addEventListener("click", clearAll);
+document.getElementById("backupBtn").addEventListener("click", backupJSON);
+document.getElementById("restoreBtn").addEventListener("click", ()=>restoreFile.click());
+restoreFile.addEventListener("change", (e)=>{
+  if(e.target.files && e.target.files[0]) restoreJSON(e.target.files[0]);
+});
+
+dateInput.value = todayISO();
+render();
+</script>
+</body>
+</html>
